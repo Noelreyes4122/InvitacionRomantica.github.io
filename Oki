@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Mi Persona Especial - San Valentín</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-pink: #ffafcc;
+            --deep-red: #c9184a;
+            --soft-white: #fffafb;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #ffafcc 0%, #ffc8dd 100%);
+            margin: 0;
+            overflow: hidden; /* Desactiva el scroll manual */
+            height: 100vh;
+        }
+
+        .cursive {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Fondo de pétalos animados */
+        #petal-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Contenedor principal de slides */
+        #main-container {
+            height: 100vh;
+            width: 100%;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+
+        .section {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center; /* Centrado vertical absoluto */
+            justify-content: center; /* Centrado horizontal absoluto */
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            max-width: 950px;
+            width: 100%;
+            padding: 3rem;
+            text-align: center;
+            /* Asegura que no se desborde en pantallas pequeñas */
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 1.2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .timer-unit {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timer-val {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--deep-red);
+            line-height: 1;
+        }
+
+        .btn-romantic {
+            background: linear-gradient(45deg, #ff4d6d, #c9184a);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(201, 24, 74, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-romantic:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 15px 30px rgba(201, 24, 74, 0.5);
+        }
+
+        .stitch-frame {
+            position: relative;
+            display: inline-block;
+            padding: 15px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(201, 24, 74, 0.2);
+            transform: rotate(-1.5deg);
+        }
+
+        .floating-img {
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            height: auto;
+            display: block;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(1deg); }
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #btnNo {
+            transition: all 0.2s ease;
+        }
+
+        .success-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Estilo personalizado para centrar contenido en el flex-row */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="petal-canvas"></canvas>
+
+    <div id="main-container">
+        <!-- SECCIÓN 1: BIENVENIDA -->
+        <section class="section">
+            <div class="glass-card">
+                <h1 class="cursive text-5xl md:text-6xl text-red-600 mb-4">Para mi persona favorita</h1>
+                <p class="text-lg text-gray-700 italic mb-8 px-4">
+                    "Si supieras elegir un lugar seguro, sería a tu lado. Cuanto más tiempo estoy contigo mas te quiero y te admiro."
+                </p>
+                
+                <p class="text-xs text-pink-500 font-bold tracking-widest uppercase mb-2">De felicidad absoluta desde el 13 de Junio</p>
+                
+                <div class="timer-box shadow-inner mx-auto max-w-sm">
+                    <div class="timer-unit"><span class="timer-val" id="dias">0</span><span class="text-[10px] uppercase text-pink-600 font-bold">Días</span></div>
+                    <div class="timer-unit"><span class="timer-val" id="horas">0</span><span class="text-[10px] uppercase text-pink-600 font-bold">Horas</span></div>
+                    <div class="timer-unit"><span class="timer-val" id="minutos">0</span><span class="text-[10px] uppercase text-pink-600 font-bold">Min</span></div>
+                    <div class="timer-unit"><span class="timer-val" id="segundos">0</span><span class="text-[10px] uppercase text-pink-600 font-bold">Seg</span></div>
+                </div>
+
+                <div class="mt-10">
+                    <button class="btn-romantic" onclick="goToSlide(1)">Descubre algo más ↓</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: EL FLECHAZO (STITCH CENTRALIZADO) -->
+        <section class="section">
+            <div class="glass-card">
+                <div class="flex flex-col md:flex-row gap-12 items-center justify-center">
+                    <div class="w-full md:w-1/2 flex justify-center">
+                        <div class="stitch-frame">
+                            <img src="https://wallpapers.com/images/high/stitch-in-love-valentines-day-udtmk18zt7e2ail9.webp" alt="Stitch enamorado" class="floating-img">
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 text-left content-wrapper">
+                        <h2 class="cursive text-5xl text-red-500 mb-6">Desde que te vi...</h2>
+                        <p class="text-xl text-gray-700 leading-relaxed mb-6">
+                            Supe que me iba a enamorar de ti. Fue como si mi corazón finalmente encontrara el ritmo que le faltaba. 
+                        </p>
+                        <p class="text-xl text-gray-600 mb-8 italic border-l-4 border-red-400 pl-6">
+                            Gracias por ser mi hogar y por hacer de cada día una aventura llena de amor.
+                        </p>
+                        <div class="mt-4">
+                            <button class="btn-romantic w-full md:w-auto" onclick="goToSlide(2)">Tengo una pregunta...</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: LA PREGUNTA CENTRALIZADA -->
+        <section class="section">
+            <div class="glass-card">
+                <div class="mb-8 flex justify-center">
+                    <img src="https://wallpapers.com/images/high/stitchand-lilo-valentines-day-yucdggc73fprd3fl.webp" alt="Lilo y Stitch San Valentín" class="floating-img border-4 border-white shadow-xl" style="max-width: 320px;">
+                </div>
+                
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2 uppercase tracking-tighter">¿Me harías el honor de ser mi</h2>
+                <h2 class="cursive text-5xl md:text-7xl text-red-600 mb-8">Valentine este 14 de Febrero?</h2>
+                
+                <p class="text-lg text-gray-500 mb-10 italic">"Porque un amor como el nuestro merece celebrarse siempre..."</p>
+
+                <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
+                    <button class="btn-romantic px-16 text-2xl py-4" onclick="celebrate()">¡SÍ, ACEPTO! ❤️</button>
+                    <button id="btnNo" class="text-gray-400 font-bold hover:text-red-500 underline text-base" onmouseover="moveNoButton()">Tal vez no...</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- OVERLAY DE ÉXITO -->
+    <div id="successOverlay" class="success-overlay">
+        <h2 class="cursive text-7xl md:text-9xl text-red-600 mb-6 animate-bounce">¡SIII! ❤️</h2>
+        <p class="text-2xl md:text-4xl font-bold text-gray-700 mb-8 px-4">¡Porque un amor como el nuestro merece celebrarse siempre!</p>
+        <div class="text-6xl mb-10">💖🌹✨🧸</div>
+        <p class="text-2xl text-pink-500 italic font-medium px-4">Te amo más de lo que las palabras pueden expresar.</p>
+        <button class="btn-romantic mt-12" onclick="location.reload()">Volver a ver</button>
+    </div>
+
+    <script>
+        // Lógica de Navegación por Slides
+        let currentSlide = 0;
+        const container = document.getElementById('main-container');
+
+        function goToSlide(index) {
+            currentSlide = index;
+            container.style.transform = `translateY(-${currentSlide * 100}vh)`;
+        }
+
+        // Lógica del Contador
+        const startDate = new Date('2024-06-13T00:00:00');
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - startDate;
+            document.getElementById('dias').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('horas').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            document.getElementById('minutos').innerText = Math.floor((diff / (1000 * 60)) % 60);
+            document.getElementById('segundos').innerText = Math.floor((diff / 1000) % 60);
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Canvas para Pétalos
+        const canvas = document.getElementById('petal-canvas');
+        const ctx = canvas.getContext('2d');
+        let petals = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Petal {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.size = Math.random() * 20 + 10;
+                this.speed = Math.random() * 2 + 0.5;
+                this.angle = Math.random() * 360;
+                this.spin = Math.random() * 2 - 1;
+                this.type = ['🌸', '❤️', '🌹', '✨'][Math.floor(Math.random() * 4)];
+            }
+            draw() {
+                ctx.font = `${this.size}px Arial`;
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle * Math.PI / 180);
+                ctx.fillText(this.type, 0, 0);
+                ctx.restore();
+            }
+            update() {
+                this.y += this.speed;
+                this.angle += this.spin;
+                if (this.y > canvas.height) {
+                    this.y = -30;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+        }
+
+        for (let i = 0; i < 70; i++) petals.push(new Petal());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            petals.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        function moveNoButton() {
+            const btn = document.getElementById('btnNo');
+            const padding = 100;
+            const x = Math.random() * (window.innerWidth - btn.offsetWidth - padding) + padding/2;
+            const y = Math.random() * (window.innerHeight - btn.offsetHeight - padding) + padding/2;
+            btn.style.position = 'fixed';
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+            btn.style.zIndex = '2000';
+        }
+
+        function celebrate() {
+            const overlay = document.getElementById('successOverlay');
+            overlay.style.display = 'flex';
+            
+            for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                    const p = document.createElement('div');
+                    p.className = 'particle';
+                    p.innerHTML = ['❤️', '💖', '🌸', '✨', '🌹', '🦋', '🧸'][Math.floor(Math.random() * 7)];
+                    p.style.left = '50vw';
+                    p.style.top = '50vh';
+                    p.style.fontSize = Math.random() * 40 + 20 + 'px';
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = Math.random() * 15 + 5;
+                    const vx = Math.cos(angle) * velocity;
+                    const vy = Math.sin(angle) * velocity;
+                    
+                    let posX = 0;
+                    let posY = 0;
+                    let opacity = 1;
+                    
+                    const move = setInterval(() => {
+                        posX += vx;
+                        posY += vy;
+                        p.style.transform = `translate(${posX}px, ${posY}px)`;
+                        opacity -= 0.015;
+                        p.style.opacity = opacity;
+                        
+                        if (opacity <= 0) {
+                            clearInterval(move);
+                            p.remove();
+                        }
+                    }, 20);
+                    
+                    document.body.appendChild(p);
+                }, i * 15);
+            }
+        }
+    </script>
+</body>
+</html>
